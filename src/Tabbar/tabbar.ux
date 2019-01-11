@@ -1,0 +1,89 @@
+<!--引入自定义的模版-->
+<!--引入首页-->
+<import name='index' src="../Index/index.ux"></import>
+<!--引入“分类”页面-->
+<import name='type' src="../Type/type.ux"></import>
+<!--引入“我的”页面-->
+<import name='my' src="../My/my.ux"></import>
+<template>
+    <!--注意：template里只能有一个根节点 -->
+    <div class="container">
+        <!--根据不同的flag显示不同的页面-->
+        <block if="{{flag==0}}">
+            <!--显示"首页"-->
+            <index></index>
+        </block>
+        <block elif="{{flag==1}}">
+            <!--显示"分类"页面-->
+            <type></type>
+        </block>
+        <block elif="{{flag==2}}">
+            <!--显示"我的"页面-->
+            <my></my>
+        </block>
+        <!--底部导航栏-->
+        <tabs>
+            <tab-bar class="footer-container">
+                <!--遍历tabBar.list，生成导航栏-->
+                <block for='tabBar.list'>
+                    <div class="footer-item" onclick="setIndex($idx)">
+                        <!--$idx为tabBar.list当前的索引值，以0开始-->
+                        <!--如果当前页面被选中-->
+                        <block if='{{$idx==flag}}'>
+                            <!--icon-->
+                            <image src="{{tabBar.list[$idx].selected_icon}}" class="footer-item-img"></image>
+                            <!--页面标签值-->
+                            <text class="tab-text" style="color: {{tabBar.list[$idx].selected_color}}">{{tabBar.list[$idx].name}}</text>
+                        </block>
+                        <!--当前页面未被选中-->
+                        <block else>
+                            <image src="{{tabBar.list[$idx].icon}}" class="footer-item-img"></image>
+                            <text class="tab-text" style="color: {{tabBar.list[$idx].color}}">{{tabBar.list[$idx].name}}</text>
+                        </block>
+                    </div>
+                </block>
+            </tab-bar>
+        </tabs>
+    </div>
+</template>
+<style src="./tabbar.css"></style>
+<script>
+    module.exports = {
+        data: {
+            flag: 0,//默认为 0 首页，1 分类，2 我的
+            tabBar: {
+                list: [{
+                    name: '首页',//当前页面标签值
+                    icon: '../Common/home.png',//未选中icon地址
+                    color: '#666666',//未选中时文本颜色
+                    selected_color: '#1296db',//选中时文本颜色
+                    selected_icon: '../Common/home_selected.png'//选中是icon地址
+                }, {
+                    name: '分类',
+                    icon: '../Common/type.png',
+                    color: '#666666',
+                    selected_color: '#1296db',
+                    selected_icon: '../Common/type_selected.png'
+                }, {
+                    name: '我的',
+                    icon: '../Common/my.png',
+                    color: '#666666',
+                    selected_color: '#1296db',
+                    selected_icon: '../Common/my_selected.png'
+                }]
+            }
+        },
+        //初始化，进入界面加载的事件
+        onInit() {
+            //设置页面title
+            this.$page.setTitleBar({ text:  this.tabBar.list[this.flag].name})
+        },
+        //修改flag实现点击导航栏显示不同的页面，pos为传入的参数
+        setIndex: function (pos) {
+            //设置flag，flag改变后显示的页面也会对应的改变
+            this.flag = pos
+            //设置页面标题
+            this.$page.setTitleBar({ text: this.tabBar.list[pos].name })
+        }
+    }    
+</script>
